@@ -1,0 +1,10 @@
+{
+  "C_Cpp.errorSquiggles": "disabled",
+  "files.associations": {
+    "time.h": "c",
+    "dirent.h": "c",
+    "string.h": "c",
+    "pthread.h": "c",
+    "zlib.h": "c"
+  }
+}
