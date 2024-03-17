@@ -1,5 +1,5 @@
-vzip: serial_copy.c
-	gcc serial_copy.c -lz -o vzip
+vzip: serial_correct.c
+	gcc serial_correct.c -lz -o vzip
 
 test:
 	rm -f video.vzip

@@ -6,8 +6,12 @@
 #include <zlib.h>
 #include <time.h>
 #include "helper_copy.h"
+#include <pthread.h>
 
 #define BUFFER_SIZE 1048576 // 1MB
+
+pthread_t thread1;
+pthread_t thread2;
 
 int cmp(const void *a, const void *b) {
 	return strcmp(*(char **) a, *(char **) b);
@@ -80,21 +84,12 @@ int main(int argc, char **argv) {
     free(full_path);
   }
 
-  // Zip                                                                           /* This ZIP takes the most time. Use threads here */
-  for (int i=0; i<nfiles; i++) {
-    z_stream strm;
-		int ret = deflateInit(&strm, 9);
-		assert(ret == Z_OK);
-		strm.avail_in = all_files[i]->nbytes;
-		strm.next_in = all_files[i]->buffer_in;
-		strm.avail_out = BUFFER_SIZE;
-		strm.next_out = all_files[i]->buffer_out;
+  // Zip                                                                      /* This ZIP takes the most time. Use threads here */
+  pthread_create(&thread1, NULL, ZipEven, (void *) all_files);
+  pthread_create(&thread2, NULL, ZipOdd, (void *) all_files);
 
-		ret = deflate(&strm, Z_FINISH);
-		assert(ret == Z_STREAM_END);
-
-    *(all_files[i]->nbytes_zipped) = BUFFER_SIZE-strm.avail_out;
-  }
+  pthread_join(thread1, NULL);
+  pthread_join(thread2, NULL);
 
   // Dump
   for (int i=0; i<nfiles; i++) {

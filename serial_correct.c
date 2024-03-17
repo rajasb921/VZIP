@@ -6,6 +6,7 @@
 #include <zlib.h>
 #include <time.h>
 
+
 #define BUFFER_SIZE 1048576 // 1MB
 
 int cmp(const void *a, const void *b) {
@@ -89,13 +90,6 @@ int main(int argc, char **argv) {
 		fwrite(buffer_out, sizeof(unsigned char), nbytes_zipped, f_out);
 		total_out += nbytes_zipped;
 
-
-    printf("Zipping file %d\n", i);
-    printf("--------------------------------------\n");
-    printf("%d bytes\n", nbytes);
-    printf("Buffer in: %p\n", buffer_in);
-    printf("Buffer out: %p\n", buffer_out);
-    printf("--------------------------------------\n\n");
 		free(full_path);
 	}
 	fclose(f_out);
