@@ -5,6 +5,7 @@
     "dirent.h": "c",
     "string.h": "c",
     "pthread.h": "c",
-    "zlib.h": "c"
+    "zlib.h": "c",
+    "helper_copy.h": "c"
   }
 }

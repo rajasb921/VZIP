@@ -5,7 +5,8 @@
 #include <string.h>
 #include <zlib.h>
 #include <time.h>
-#include "helper.h"
+
+#define BUFFER_SIZE 1048576 // 1MB
 
 int cmp(const void *a, const void *b) {
 	return strcmp(*(char **) a, *(char **) b);
@@ -32,8 +33,6 @@ int main(int argc, char **argv) {
 		return 0;
 	}
 
-/* Start of Sort function */
-
 	// create sorted list of PPM files
 	while ((dir = readdir(d)) != NULL) {
 		files = realloc(files, (nfiles+1)*sizeof(char *));
@@ -50,51 +49,63 @@ int main(int argc, char **argv) {
 	closedir(d);
 	qsort(files, nfiles, sizeof(char *), cmp);
 
-/* End of Sort function */
-	
-  pthread_t load_thread, zip_thread, dump_thread;
-  // create a single zipped package with all PPM files in lexicographical order
-	int total_in = 0, total_out = 0, nbytes = 0;
-  unsigned char buffer_in[BUFFER_SIZE];
-	unsigned char buffer_out[BUFFER_SIZE];
-  z_stream strm;
+	// create a single zipped package with all PPM files in lexicographical order
+	int total_in = 0, total_out = 0;
 	FILE *f_out = fopen("video.vzip", "w");
 	assert(f_out != NULL);
-  thread_data *data = thread_data_init_files(nfiles, argv, files, f_out, buffer_in, buffer_out, &total_in, &total_out, &nbytes, &strm);
+	for(int i=0; i < nfiles; i++) {
+		int len = strlen(argv[1])+strlen(files[i])+2;
+		char *full_path = malloc(len*sizeof(char));
+		assert(full_path != NULL);
+		strcpy(full_path, argv[1]);
+		strcat(full_path, "/");
+		strcat(full_path, files[i]);
 
-    /* Start of Load function */
-    int rc1 = pthread_create(&load_thread, NULL, Load, (void *)data);
-    assert(rc1 == 0);
-		//Load((void *)data); 
-    /* End of Load function */
+		unsigned char buffer_in[BUFFER_SIZE];
+		unsigned char buffer_out[BUFFER_SIZE];
 
-    /* Start of Zip function */
-    int rc2 = pthread_create(&zip_thread, NULL, Zip, (void *)data);
-    assert(rc2 == 0);
-		//Zip((void *)data);
-    /* End of Zip function */
+		// load file
+		FILE *f_in = fopen(full_path, "r");
+		assert(f_in != NULL);
+		int nbytes = fread(buffer_in, sizeof(unsigned char), BUFFER_SIZE, f_in);
+		fclose(f_in);
+		total_in += nbytes;
 
-		
-    /* Start of Dump function */
-    // dump zipped file
-    int rc3 = pthread_create(&dump_thread, NULL, Dump, (void *)data);
-    assert(rc3 == 0);
-		//Dump((void *)data);
-    /* End of Dump function */
+		// zip file
+		z_stream strm;
+		int ret = deflateInit(&strm, 9);
+		assert(ret == Z_OK);
+		strm.avail_in = nbytes;
+		strm.next_in = buffer_in;
+		strm.avail_out = BUFFER_SIZE;
+		strm.next_out = buffer_out;
+
+		ret = deflate(&strm, Z_FINISH);
+		assert(ret == Z_STREAM_END);
+
+		// dump zipped file
+		int nbytes_zipped = BUFFER_SIZE-strm.avail_out;
+		fwrite(&nbytes_zipped, sizeof(int), 1, f_out);
+		fwrite(buffer_out, sizeof(unsigned char), nbytes_zipped, f_out);
+		total_out += nbytes_zipped;
 
 
-  pthread_join(load_thread, NULL);
-  pthread_join(zip_thread, NULL);
-  pthread_join(dump_thread, NULL);
-  fclose(f_out);
+    printf("Zipping file %d\n", i);
+    printf("--------------------------------------\n");
+    printf("%d bytes\n", nbytes);
+    printf("Buffer in: %p\n", buffer_in);
+    printf("Buffer out: %p\n", buffer_out);
+    printf("--------------------------------------\n\n");
+		free(full_path);
+	}
+	fclose(f_out);
+
 	printf("Compression rate: %.2lf%%\n", 100.0*(total_in-total_out)/total_in);
 
 	// release list of files
-
 	for(int i=0; i < nfiles; i++)
 		free(files[i]);
 	free(files);
-
 
 	// do not modify the main function after this point!
 
