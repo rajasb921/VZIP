@@ -50,7 +50,7 @@ def play_video(frames_dir):
         frame_path = os.path.join(frames_dir, frame_name)
         frame = cv2.imread(frame_path)
         cv2.imshow('Video', frame)
-        cv2.waitKey(30)  # Adjust the delay between frames (30 milliseconds here)
+        cv2.waitKey(33)  # 30 fps video
     
     # Release the VideoCapture and close all OpenCV windows
     cap.release()
