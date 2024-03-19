@@ -46,7 +46,7 @@ def play_video(frames_dir):
         frame_path = os.path.join(frames_dir, frame_name)
         frame = cv2.imread(frame_path)
         cv2.imshow('Video', frame)
-        cv2.waitKey(33)  # 30 fps video
+        cv2.waitKey(42)  # 24 fps video
     
    
     cap.release()
