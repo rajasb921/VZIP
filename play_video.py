@@ -31,17 +31,13 @@ def decompress_files(input_file):
             file_counter += 1
 
 def play_video(frames_dir):
-    # Get the list of frames
     frames = sorted(os.listdir(frames_dir))
 
-    # Create a VideoCapture object
     cap = cv2.VideoCapture()
 
-    # Get the frame width and height
     frame = cv2.imread(os.path.join(frames_dir, frames[0]))
     height, width, _ = frame.shape
 
-    # Open a window to display the video
     cv2.namedWindow('Video', cv2.WINDOW_NORMAL)
     cv2.resizeWindow('Video', width, height)
 
@@ -52,18 +48,14 @@ def play_video(frames_dir):
         cv2.imshow('Video', frame)
         cv2.waitKey(33)  # 30 fps video
     
-    # Release the VideoCapture and close all OpenCV windows
+   
     cap.release()
     cv2.destroyAllWindows()
 
-# Provide the path to your compressed file
-input_file = 'video.vzip'
-
 # Decompress the files
+input_file = 'video.vzip'
 decompress_files(input_file)
 
-# Provide the path to the directory containing frames
-frames_dir = 'test_frames'
-
 # Play the video
+frames_dir = 'test_frames'
 play_video(frames_dir)
