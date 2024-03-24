@@ -13,9 +13,12 @@ Extra credit for VZIP. This script uses the ZLIB library to decompress the given
   ```
   python play_video.py
   ```
-  If you are using Python3.0
+  If you are using Python3.0, execute the following command
   ```
   python3 play_video.py
   ```
 
 3. The script will launch the media player and start playing the video.
+
+## Notes
+This script works by decompressing the input file specified by the user. Please ensure there exists a file with the extension .vzip in the same directory as the script.
