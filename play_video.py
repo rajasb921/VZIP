@@ -2,11 +2,11 @@ import os
 import zlib
 import cv2
 
-def decompress_files(input_file):
+def decompress(input_file):
     # Create the output directory if it doesn't exist
-    output_dir = 'test_frames'
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
+    output_folder = 'test_frames'
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
 
     with open(input_file, 'rb') as f:
         file_counter = 1
@@ -24,7 +24,7 @@ def decompress_files(input_file):
             decompressed_data = zlib.decompress(compressed_data)
 
             # Write the decompressed data to a file in the output directory
-            output_file_path = os.path.join(output_dir, f'{file_counter}.ppm')
+            output_file_path = os.path.join(output_folder, f'{file_counter}.ppm')
             with open(output_file_path, 'wb') as outfile:
                 outfile.write(decompressed_data)
             
@@ -54,7 +54,7 @@ def play_video(frames_dir):
 
 # Decompress the files
 input_file = 'video.vzip'
-decompress_files(input_file)
+decompress(input_file)
 
 # Play the video
 frames_dir = 'test_frames'
