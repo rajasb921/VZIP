@@ -21,4 +21,4 @@ Extra credit for VZIP. This script uses the ZLIB library to decompress the given
 3. The script will launch the media player and start playing the video.
 
 ## Notes
-This script works by decompressing the input file specified by the user. Please ensure there exists a file with the extension .vzip in the same directory as the script.
+This script works by decompressing the input file video.vzip. Please ensure that this file exists in the same directory as the script.
